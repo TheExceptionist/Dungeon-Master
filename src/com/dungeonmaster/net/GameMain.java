@@ -1,7 +1,6 @@
 package com.dungeonmaster.net;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
@@ -9,6 +8,7 @@ import javax.swing.JFrame;
 
 import com.dungeonmaster.net.assets.Assets;
 import com.dungeonmaster.net.assets.JukeBox;
+import com.dungeonmaster.net.gen.LevelGen;
 import com.dungeonmaster.net.input.Key;
 import com.dungeonmaster.net.menu.Menu;
 import com.dungeonmaster.net.menu.StartMenu;
@@ -17,15 +17,15 @@ public class GameMain extends Canvas implements Runnable{
 	private static final long serialVersionUID = 1L;
 	
 	public static final String title = "Dungeon Master";
-	public static final int WIDTH = 600, HEIGHT = 600;
-	
-	public int[] titles;
+	public static final int WIDTH = 640, HEIGHT = 630;
+
 	public Menu menu;
 	
-	private boolean running;
+	private boolean running, needGen = true;
 	
 	private Thread thread;
 	private Key k;
+	private LevelGen gen;
 	
 	public void setMenu(Menu m){
 		menu = m;
@@ -33,6 +33,7 @@ public class GameMain extends Canvas implements Runnable{
 	
 	public GameMain(){
 		k = new Key(this);
+		gen = new LevelGen(Math.round(WIDTH/32), Math.round(HEIGHT/32));
 		
 		Assets.load();
 		JukeBox.init();
@@ -103,7 +104,12 @@ public class GameMain extends Canvas implements Runnable{
 			k.tick();
 		}
 		if(menu == null){
-
+			if(needGen){
+				gen.genLevel();
+				needGen = false;
+				
+				JukeBox.loop("Theme");
+			}
 		}
 	}
 	
@@ -121,7 +127,17 @@ public class GameMain extends Canvas implements Runnable{
 			menu.render(g);
 		}
 		if(menu == null){
-			
+			if(!needGen){				
+				for(int x = 0; x < gen.width; x++){
+					for(int y = 0; y < gen.height; y++){
+						if(gen.tiles[x+y] == 1){
+							g.drawImage(Assets.brickWall, x * 32,y * 32, 32, 32, null);
+						}else{
+							g.drawImage(Assets.dun, x * 32,y * 32, 32, 32, null);
+						}
+					}
+				}
+			}
 		}
 		
 		g.dispose();
