@@ -8,6 +8,7 @@ import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 
 import com.dungeonmaster.net.assets.Assets;
+import com.dungeonmaster.net.assets.JukeBox;
 import com.dungeonmaster.net.input.Key;
 import com.dungeonmaster.net.menu.Menu;
 import com.dungeonmaster.net.menu.StartMenu;
@@ -34,6 +35,10 @@ public class GameMain extends Canvas implements Runnable{
 		k = new Key(this);
 		
 		Assets.load();
+		JukeBox.init();
+		
+		JukeBox.load("/sound/Level_1.wav", "Escape");
+		JukeBox.load("/sound/Main_Theme.wav", "Theme");
 		
 		setMenu(new StartMenu(k, this));
 	}
@@ -98,7 +103,7 @@ public class GameMain extends Canvas implements Runnable{
 			k.tick();
 		}
 		if(menu == null){
-			
+
 		}
 	}
 	
